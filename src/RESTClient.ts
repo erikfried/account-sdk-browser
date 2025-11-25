@@ -2,12 +2,11 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
 
-import SDKError from './SDKError.js';
-import { cloneDefined } from './object.js';
-import { urlMapper } from './url.js';
-import { assert, isObject, isFunction, isStr, isNonEmptyString } from './validate.js';
+import SDKError from './SDKError';
+import { cloneDefined } from './object';
+import { urlMapper } from './url';
+import { assert, isObject, isFunction, isStr, isNonEmptyString } from './validate';
 
 /**
  * Converts a series of parameters of various types to a string that's suitable for logging.
@@ -15,7 +14,7 @@ import { assert, isObject, isFunction, isStr, isNonEmptyString } from './validat
  * @param {Array.<*>} msg - a number of parameters from any type (including objects)
  * @return {string}
  */
-const logString = (msg) => msg.map(m => isObject(m) ? JSON.stringify(m, null, 2) : m).join(' ');
+const logString = (msg: any[]): string => msg.map(m => isObject(m) ? JSON.stringify(m, null, 2) : m).join(' ');
 
 /**
  * Calls a log function passing a string
@@ -24,7 +23,7 @@ const logString = (msg) => msg.map(m => isObject(m) ? JSON.stringify(m, null, 2)
  * @param {...*} msg - a series of message objects
  * @return {*} - The result of calling fn
  */
-const logFn = (fn, ...msg) => (typeof fn === 'function') && fn(logString(msg));
+const logFn = (fn: any, ...msg: any[]): any => (typeof fn === 'function') && fn(logString(msg));
 
 /**
  * Encode a string like URLSearchParams would do
@@ -32,7 +31,7 @@ const logFn = (fn, ...msg) => (typeof fn === 'function') && fn(logString(msg));
  * @param {string} str - The input
  * @returns {string} The encoded string
  */
-function encode(str) {
+function encode(str: string): string {
     const replace = {
         '!': '%21',
         "'": '%27',
@@ -59,6 +58,11 @@ const globalFetch = () => window.fetch && window.fetch.bind(window);
  * @private
  */
 export class RESTClient {
+    url: URL;
+    defaultParams: any;
+    log?: any;
+    fetch?: any;
+
 
     /**
      * @param {object} options
@@ -73,7 +77,7 @@ export class RESTClient {
      * @param {object} [options.defaultParams={}] - a set of parameters to add to every call custom.
      *        As long as it supports the standard fetch API we're good.
      */
-    constructor({ serverUrl = 'PRE', envDic, fetch = globalFetch(), log, defaultParams = {}}) {
+    constructor({ serverUrl = 'PRE', envDic, fetch = globalFetch(), log, defaultParams = {}}: any) {
         assert(isObject(defaultParams), `defaultParams should be a non-null object`);
 
         const mappedUrl = urlMapper(serverUrl, envDic);
@@ -119,7 +123,7 @@ export class RESTClient {
         data = {},
         useDefaultParams = true,
         fetchOptions = { method, credentials: 'include' }
-    }) {
+    }: any): Promise<any> {
         assert(isFunction(this.fetch),
             `Can't make a call. The reference to fetch is missing or not a function.`);
         assert(isNonEmptyString(method), `Method must be a non empty string but it is "${method}"`);
@@ -144,8 +148,8 @@ export class RESTClient {
             return responseObject;
         } catch (err) {
             let msg = isStr(err) ? err : 'Unknown RESTClient error';
-            if (isObject(err) && isStr(err.message)) {
-                msg = err.message;
+            if (isObject(err) && isStr(((err as any).message))) {
+                msg = ((err as any).message);
             }
             throw new SDKError(`Failed to '${method}' '${fullUrl}': '${msg}'`, err);
         }

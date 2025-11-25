@@ -2,4 +2,4 @@
  * See LICENSE.md in the project root.
  */
 
-export { default, Monetization } from './src/monetization.js';
+export { default, Monetization } from './src/monetization';

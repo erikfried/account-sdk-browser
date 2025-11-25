@@ -2,4 +2,4 @@
  * See LICENSE.md in the project root.
  */
 
-export { default, Payment } from './src/payment.js';
+export { default, Payment } from './src/payment';

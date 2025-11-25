@@ -2,15 +2,13 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
 /**
  * @summary Some routines that work on javascript objects
  * @private
  */
 
-import { assert, isObject, isNonEmptyObj } from './validate.js';
-import SDKError from './SDKError.js';
+import { assert, isObject, isNonEmptyObj } from './validate';
+import SDKError from './SDKError';
 
 /**
  * Similar to Object.assign({}, src) but only clones the keys of an object that have non-undefined
@@ -27,12 +25,12 @@ import SDKError from './SDKError.js';
  * @return {object} a new object that is similar to src with all the key/values where the
  *         keys for undefined values are removed.
  */
-export function cloneDefined(...sources) {
-    const result = {};
+export function cloneDefined(...sources: any[]): any {
+    const result: any = {};
     if (!(sources && sources.length)) {
         throw new SDKError('No objects to clone');
     }
-    sources.forEach(source => {
+    sources.forEach((source: any) => {
         assert(isObject(source));
         if (isNonEmptyObj(source)) {
             Object.entries(source).forEach(([key, value]) => {
@@ -53,7 +51,7 @@ export function cloneDefined(...sources) {
  * @throws {SDKError} - if the obj is not an accepted type or is not
  *         stringifiable by JSON for example if it has loops
  */
-export function cloneDeep(obj) {
+export function cloneDeep(obj: any): any {
     assert(typeof obj === 'object', `obj should be an object (even null) but it is ${obj}`);
     return JSON.parse(JSON.stringify(obj)) || obj;
 }

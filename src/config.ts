@@ -2,8 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
 /*
  * This file declares configs that are essentially part of how the SDK works and interacts with our
  * backend servers.
@@ -47,7 +45,28 @@
  * @prop {string} ENDPOINTS.SESSION_SERVICE.PRO_FI - Production environment Finland
  * @prop {string} ENDPOINTS.SESSION_SERVICE.PRO_DK - Production environment Denmark
  */
-const config = {
+
+interface EndpointEnvironments {
+    [key: string]: string;
+    LOCAL: string;
+    DEV: string;
+    PRE: string;
+    PRO: string;
+    PRO_NO: string;
+    PRO_FI: string;
+    PRO_DK: string;
+}
+
+interface Config {
+    ENDPOINTS: {
+        SPiD: EndpointEnvironments;
+        BFF: EndpointEnvironments;
+        SESSION_SERVICE: EndpointEnvironments;
+    };
+    NAMESPACE: EndpointEnvironments;
+}
+
+const config: Config = {
     ENDPOINTS: {
         SPiD: {
             LOCAL: 'http://id.localhost',

@@ -2,15 +2,14 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
 
-import { assert, isNonEmptyString, isUrl, isStr } from './validate.js';
-import { urlMapper } from './url.js';
-import { ENDPOINTS } from './config.js';
-import * as popup from './popup.js';
-import RESTClient from './RESTClient.js';
-import * as spidTalk from './spidTalk.js';
-import { registerGlobal } from './global-registry.js';
+import { assert, isNonEmptyString, isUrl, isStr } from './validate';
+import { urlMapper } from './url';
+import { ENDPOINTS } from './config';
+import * as popup from './popup';
+import RESTClient from './RESTClient';
+import * as spidTalk from './spidTalk';
+import { registerGlobal } from './global-registry';
 
 const globalWindow = () => window;
 
@@ -18,6 +17,14 @@ const globalWindow = () => window;
  * Provides features related to payment
  */
 export class Payment {
+    clientId: string;
+    redirectUri?: string;
+    window: any;
+    publisher?: string;
+    popup: any;
+    _spid: any;
+    _bff: any;
+
     /**
      * @param {object} options
      * @param {string} options.clientId - Mandatory client id
@@ -28,7 +35,7 @@ export class Payment {
      *
      * @throws {SDKError} - If any of options are invalid
      */
-    constructor({ clientId, redirectUri, env = 'PRE', publisher, window = globalWindow() }) {
+    constructor({ clientId, redirectUri, env = 'PRE', publisher, window = globalWindow() }: any) {
         spidTalk.emulate(window);
         assert(isNonEmptyString(clientId), 'clientId parameter is required');
 

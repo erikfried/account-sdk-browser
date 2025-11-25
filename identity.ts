@@ -2,4 +2,4 @@
  * See LICENSE.md in the project root.
  */
 
-export { default, Identity } from './src/identity.js';
+export { default, Identity } from './src/identity';

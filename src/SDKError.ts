@@ -2,8 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
 /*
  * Note: this module can't have any internal dependencies because it's used in ./validate which
  * in turn is used as a dependency to a lot of other modules. Doing so may create a circular
@@ -19,6 +17,9 @@ const STRINGIFY_TYPES = ['boolean', 'number', 'string'];
  * @private
  */
 export default class SDKError extends Error {
+    code?: number;
+    [key: string]: any;
+
     /**
      * @property {number} code - The HTTP error code
      * @extends {Error}
@@ -26,7 +27,7 @@ export default class SDKError extends Error {
      * @param {object} [errorObject] - The error object that was returned from the server. Any
      * property of errorObject object will be copied into this instance SDKError
      */
-    constructor(message, errorObject) {
+    constructor(message: string, errorObject?: any) {
         super(message);
         this.name = 'SDKError';
         if (typeof errorObject === 'object') {
@@ -44,7 +45,7 @@ export default class SDKError extends Error {
      * @private
      * @return {String}
      */
-    toString() {
+    toString(): string {
         const ret = `${this.name}: ${this.message}`;
         const additionalInfo = Object.keys(this)
             .filter(key => key !== 'name' && STRINGIFY_TYPES.includes(typeof this[key]))

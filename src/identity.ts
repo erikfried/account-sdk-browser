@@ -2,20 +2,19 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
 
-import { assert, isStr, isNonEmptyString, isObject, isUrl, isStrIn } from './validate.js';
-import { cloneDeep } from './object.js';
-import { urlMapper } from './url.js';
-import { ENDPOINTS, NAMESPACE } from './config.js';
+import { assert, isStr, isNonEmptyString, isObject, isUrl, isStrIn } from './validate';
+import { cloneDeep } from './object';
+import { urlMapper } from './url';
+import { ENDPOINTS, NAMESPACE } from './config';
 import EventEmitter from 'tiny-emitter';
-import Cache from './cache.js';
-import * as popup from './popup.js';
-import RESTClient from './RESTClient.js';
-import SDKError from './SDKError.js';
-import * as spidTalk from './spidTalk.js';
-import version from './version.js';
-import { registerGlobal } from './global-registry.js';
+import Cache from './cache';
+import * as popup from './popup';
+import RESTClient from './RESTClient';
+import SDKError from './SDKError';
+import * as spidTalk from './spidTalk';
+import version from './version';
+import { registerGlobal } from './global-registry';
 
 /**
  * @typedef {object} LoginOptions
@@ -134,7 +133,7 @@ import { registerGlobal } from './global-registry.js';
  * @property {string} error.type - Example: "UserException"
  * @property {object} response
  * @property {string} response.baseDomain - Example: "localhost"
- * @property {number} response.expiresIn - Time span in milliseconds. Example: 30 * 60 * 1000 (for 30 minutes)
+ * @property {number} (response as any).expiresIn - Time span in milliseconds. Example: 30 * 60 * 1000 (for 30 minutes)
  * @property {boolean} response.result
  * @property {number} response.serverTime - Server time in seconds since the Unix Epoch. Example: 1506287788
  */
@@ -165,6 +164,30 @@ const globalWindow = () => window;
  * Provides Identity functionalty to a web page
  */
 export class Identity extends EventEmitter {
+    _sessionInitiatedSent: boolean;
+    window: any;
+    clientId: string;
+    sessionStorageCache: any;
+    localStorageCache: any;
+    redirectUri?: string;
+    env: string;
+    log?: any;
+    callbackBeforeRedirect?: any;
+    _sessionDomain?: string;
+    _enableSessionCaching: boolean;
+    _session: any;
+    _usedSessionServiceGetSessionEndpoint: any;
+    _spid: any;
+    _oauthService: any;
+    _sessionService: any;
+    _globalSessionService: any;
+    _bffService: any;
+    _hasSessionInProgress: any;
+    popup: any;
+    setVarnishCookie?: boolean;
+    varnishExpiresIn?: number;
+    varnishCookieDomain?: string;
+
     /**
      * @param {object} options
      * @param {string} options.clientId - Example: "1234567890abcdef12345678"
@@ -177,7 +200,8 @@ export class Identity extends EventEmitter {
      * @param {function} [options.callbackBeforeRedirect] - callback triggered before session refresh redirect happen
      * @throws {SDKError} - If any of options are invalid
      */
-    constructor({
+    constructor(options: any) {
+        const {
         clientId,
         redirectUri,
         sessionDomain,
@@ -185,7 +209,7 @@ export class Identity extends EventEmitter {
         log,
         window = globalWindow(),
         callbackBeforeRedirect = ()=>{}
-    }) {
+        } = options;
         super();
         assert(isNonEmptyString(clientId), 'clientId parameter is required');
         assert(isObject(window), 'The reference to window is missing');
@@ -617,11 +641,11 @@ export class Identity extends EventEmitter {
 
                     await this.callbackBeforeRedirect();
 
-                    return this._sessionService.makeUrl(sessionData.redirectURL, {tabId: this._getTabId()});
+                    return this._sessionService.makeUrl((sessionData as any).redirectURL, {tabId: this._getTabId()});
                 }
 
                 if (this._enableSessionCaching) {
-                    const expiresIn = 1000 * (sessionData.expiresIn || 300);
+                    const expiresIn = 1000 * ((sessionData as any).expiresIn || 300);
                     this.sessionStorageCache.set(HAS_SESSION_CACHE_KEY, sessionData, expiresIn);
                 }
             }
@@ -1071,7 +1095,7 @@ export class Identity extends EventEmitter {
         // getUserContextData doesn't throw exception
         const userData = await this.getUserContextData();
 
-        const queryParams = { client_id: this.clientId };
+        const queryParams: any = { client_id: this.clientId };
         if (options && options.encoding) {
             queryParams.encoding = options.encoding;
         }
@@ -1091,14 +1115,14 @@ export class Identity extends EventEmitter {
                     return reject(new SDKError('Missing user data'));
                 }
 
-                const initialParams = {
+                const initialParams: any = {
                     displayText: userData.display_text,
                     env: this.env,
                     clientName: userData.client_name,
                     clientId: this.clientId,
                     providerId: userData.provider_id,
                     windowWidth: () => window.innerWidth,
-                    windowOnResize: (f) => {
+                    windowOnResize: (f: any) => {
                         window.onresize = f;
                     },
                 };
@@ -1131,8 +1155,8 @@ export class Identity extends EventEmitter {
                     this.emit('simplifiedLoginCancelled');
                 }
 
-                if (window.openSimplifiedLoginWidget) {
-                    window.openSimplifiedLoginWidget(initialParams, loginHandler, loginNotYouHandler, initHandler, cancelLoginHandler);
+                if ((window as any).openSimplifiedLoginWidget) {
+                    (window as any).openSimplifiedLoginWidget(initialParams, loginHandler, loginNotYouHandler, initHandler, cancelLoginHandler);
                     return resolve(true);
                 }
 
@@ -1140,7 +1164,7 @@ export class Identity extends EventEmitter {
                 simplifiedLoginWidget.type = "text/javascript";
                 simplifiedLoginWidget.src = widgetUrl;
                 simplifiedLoginWidget.onload = () => {
-                    window.openSimplifiedLoginWidget(initialParams, loginHandler, loginNotYouHandler, initHandler, cancelLoginHandler);
+                    (window as any).openSimplifiedLoginWidget(initialParams, loginHandler, loginNotYouHandler, initHandler, cancelLoginHandler);
                     resolve(true);
                 };
                 simplifiedLoginWidget.onerror = () => {

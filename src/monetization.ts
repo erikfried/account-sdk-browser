@@ -2,18 +2,17 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
 
-import { assert, isStr, isNonEmptyString, isUrl } from './validate.js';
-import { urlMapper } from './url.js';
-import { ENDPOINTS, NAMESPACE } from './config.js';
+import { assert, isStr, isNonEmptyString, isUrl } from './validate';
+import { urlMapper } from './url';
+import { ENDPOINTS, NAMESPACE } from './config';
 import EventEmitter from 'tiny-emitter';
-import RESTClient from './RESTClient.js';
-import Cache from './cache.js';
-import * as spidTalk from './spidTalk.js';
-import SDKError from './SDKError.js';
-import version from './version.js';
-import { registerGlobal } from './global-registry.js';
+import RESTClient from './RESTClient';
+import Cache from './cache';
+import * as spidTalk from './spidTalk';
+import SDKError from './SDKError';
+import version from './version';
+import { registerGlobal } from './global-registry';
 
 const globalWindow = () => window;
 
@@ -21,6 +20,14 @@ const globalWindow = () => window;
  * Provides features related to monetization
  */
 export class Monetization extends EventEmitter {
+    cache: any;
+    clientId: string;
+    env: string;
+    redirectUri?: string;
+    log?: any;
+    _spid: any;
+    _sessionService: any;
+
     /**
      * @param {object} options
      * @param {string} options.clientId - Mandatory client id
@@ -30,7 +37,7 @@ export class Monetization extends EventEmitter {
      * @param {object} [options.window]
      * @throws {SDKError} - If any of options are invalid
      */
-    constructor({ clientId, redirectUri, env = 'PRE', sessionDomain, window = globalWindow() }) {
+    constructor({ clientId, redirectUri, env = 'PRE', sessionDomain, window = globalWindow() }: any) {
         super();
         spidTalk.emulate(window);
         // validate options

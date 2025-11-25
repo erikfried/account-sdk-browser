@@ -2,9 +2,7 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict'
-
-import { assert, isNonEmptyString, isUrl, isNonEmptyObj } from './validate.js';
+import { assert, isNonEmptyString, isUrl, isNonEmptyObj } from './validate';
 
 /**
  * A simple utility function that allows looking up URLs from a dictionary
@@ -15,7 +13,7 @@ import { assert, isNonEmptyString, isUrl, isNonEmptyObj } from './validate.js';
  * @throws {SDKError} - If the url is not an string or is an empty string
  * @return {string} The url that points to the server
  */
-export function urlMapper(url, urlMap) {
+export function urlMapper(url: string, urlMap?: Record<string, string>): string {
     assert(isNonEmptyString(url), `"url" param must be a non empty string: ${typeof url}`);
     if (isNonEmptyObj(urlMap) && isUrl(urlMap[url])) {
         return urlMap[url];

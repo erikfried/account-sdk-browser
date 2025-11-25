@@ -8,7 +8,7 @@
  * @param {any} instance the instance of the component to register
  * @returns {void}
  */
-export const registerGlobal = (global, componentClassName, instance) => {
+export const registerGlobal = (global: any, componentClassName: string, instance: any): void => {
     const prefixedName = `sch${componentClassName}`;
     if (!(global)[prefixedName]) {
         (global)[prefixedName] = instance;
@@ -17,4 +17,3 @@ export const registerGlobal = (global, componentClassName, instance) => {
         global.dispatchEvent(new CustomEvent(`${prefixedName}:ready`, { detail: { instance } }));
     }
 }
-

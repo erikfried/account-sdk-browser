@@ -2,8 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
 /*
  * This file declares configs that are essentially part of how the SDK works and interacts with our
  * backend servers.

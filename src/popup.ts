@@ -2,8 +2,8 @@
  * See LICENSE.md in the project root.
  */
 
-import { assert, isObject, isUrl, isFunction } from './validate.js';
-import { cloneDefined } from './object.js';
+import { assert, isObject, isUrl, isFunction } from './validate';
+import { cloneDefined } from './object';
 
 /**
  * Serializes an object to string.
@@ -12,7 +12,7 @@ import { cloneDefined } from './object.js';
  * @param {object} obj - for example {a: 'b', c: 1}
  * @return {string} - for example 'a=b,c=1'
  */
-function serialize(obj) {
+function serialize(obj: any): string {
     assert(isObject(obj), `Object must be an object but it is '${obj}'`);
     return Object.keys(obj)
         .map(key => `${key}=${obj[key]}`)
@@ -37,7 +37,7 @@ const defaultWindowFeatures = {
  * @returns {Window|null} - A reference to the popup window
  * @private
  */
-export function open(parentWindow, url, windowName = '', windowFeatures = {}) {
+export function open(parentWindow: Window, url: string, windowName: string = '', windowFeatures: any = {}): Window | null {
     assert(isObject(parentWindow), `window was supposed to be an object but it is ${parentWindow}`);
     assert(isObject(parentWindow.screen),
         `window should be a valid Window object but it lacks a 'screen' property`);
@@ -47,7 +47,7 @@ export function open(parentWindow, url, windowName = '', windowFeatures = {}) {
 
     const { height, width } = parentWindow.screen;
 
-    let mergedFeatures = cloneDefined(defaultWindowFeatures, windowFeatures);
+    let mergedFeatures: any = cloneDefined(defaultWindowFeatures, windowFeatures);
     if (Number.isFinite(mergedFeatures.width) && Number.isFinite(width)) {
         mergedFeatures.left = (width - mergedFeatures.width) / 2;
     }

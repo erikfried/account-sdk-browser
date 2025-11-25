@@ -31,3 +31,35 @@ rules:
       - warn
       - requireParamDescription: false
         requireReturnDescription: false
+
+overrides:
+  - files:
+      - "*.ts"
+      - "**/*.ts"
+    parser: "@typescript-eslint/parser"
+    parserOptions:
+      ecmaVersion: 2017
+      sourceType: module
+      project: "./tsconfig.json"
+    plugins:
+      - "@typescript-eslint"
+      - import
+    extends:
+      - eslint:recommended
+      - plugin:@typescript-eslint/recommended
+    rules:
+      # Disable import/extensions for TypeScript files (extensionless imports)
+      import/extensions:
+        - off
+      # Disable require-jsdoc for TypeScript (types provide documentation)
+      require-jsdoc: off
+      valid-jsdoc: off
+      # Use TypeScript's no-unused-vars instead
+      no-unused-vars: off
+      "@typescript-eslint/no-unused-vars": error
+      # Allow explicit any (moderate strictness)
+      "@typescript-eslint/no-explicit-any": off
+      # Allow non-null assertions
+      "@typescript-eslint/no-non-null-assertion": off
+      # Allow require statements (for regenerator-runtime)
+      "@typescript-eslint/no-var-requires": off

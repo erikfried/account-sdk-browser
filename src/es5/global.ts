@@ -6,8 +6,6 @@
  * three classes Identity, Monetization and Payment are available on the window object.
  */
 
-'use strict';
+import * as exports from './index';
 
-const { Identity, Monetization, Payment } = require('./index');
-
-Object.assign(window, { Identity, Monetization, Payment });
+Object.assign(window, exports);

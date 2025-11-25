@@ -2,9 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
+(window as any).regeneratorRuntime = require('regenerator-runtime');
 
-window.regeneratorRuntime = require('regenerator-runtime');
-const { Identity } = require('../identity.js');
-
-module.exports = { Identity };
+export { Identity } from '../identity';

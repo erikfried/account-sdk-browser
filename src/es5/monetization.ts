@@ -2,9 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
+(window as any).regeneratorRuntime = require('regenerator-runtime');
 
-window.regeneratorRuntime = require('regenerator-runtime');
-const { Monetization } = require('../monetization');
-
-module.exports = { Monetization };
+export { Monetization } from '../monetization';

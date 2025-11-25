@@ -2,4 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-export { default, Identity } from './src/identity.js';
+(window as any).regeneratorRuntime = require('regenerator-runtime');
+
+export { Identity } from '../identity';

@@ -2,14 +2,12 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
 /**
  * A workaround for how Schibsted account handles JSONP calls in the browser
  * @private
  */
 
-import { isFunction } from './validate.js';
+import { isFunction } from './validate';
 
 /**
  * This is a workaround for making the old SPiD/hassession on JSONP APIs compatible with more common
@@ -26,7 +24,7 @@ import { isFunction } from './validate.js';
  * @param {object} global - a reference to the global object
  * @return {void}
  */
-export function emulate(global) {
+export function emulate(global: any): void {
     if (global.SPiD === null || typeof global.SPiD !== 'object') {
         global.SPiD = {};
     }
@@ -34,6 +32,6 @@ export function emulate(global) {
         global.SPiD.Talk = {}
     }
     if (!isFunction(global.SPiD.Talk.response)) {
-        global.SPiD.Talk.response = (callbackName, data) => global[callbackName](data);
+        global.SPiD.Talk.response = (callbackName: string, data: any) => global[callbackName](data);
     }
 }

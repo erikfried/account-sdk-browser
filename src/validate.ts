@@ -2,9 +2,7 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
-import SDKError from './SDKError.js';
+import SDKError from './SDKError';
 
 /*
  * This module defines a set of validation functions which are used in the rest of the SDK.
@@ -22,7 +20,7 @@ import SDKError from './SDKError.js';
  * @throws {SDKError} - If the condition is falsy it throws the appropriate error
  * @return {void}
  */
-export function assert(condition, message = 'Assertion failed') {
+export function assert(condition: boolean, message: string = 'Assertion failed'): void {
     if (!condition) {
         throw new SDKError(message);
     }
@@ -34,7 +32,7 @@ export function assert(condition, message = 'Assertion failed') {
  * @param {*} value - The value to check
  * @return {boolean}
  */
-export function isStr(value) {
+export function isStr(value: any): boolean {
     return typeof value === 'string';
 }
 
@@ -44,7 +42,7 @@ export function isStr(value) {
  * @param {*} value - The value to check
  * @return {boolean}
  */
-export function isNonEmptyString(value) {
+export function isNonEmptyString(value: any): boolean {
     return typeof value === 'string' && value.length > 0;
 }
 
@@ -54,7 +52,7 @@ export function isNonEmptyString(value) {
  * @param {*} value - The value to check
  * @return {boolean}
  */
-export function isObject(value) {
+export function isObject(value: any): boolean {
     return typeof value === 'object' && value !== null;
 }
 
@@ -64,7 +62,7 @@ export function isObject(value) {
  * @param {*} value - The value to check
  * @return {boolean}
  */
-export function isNonEmptyObj(value) {
+export function isNonEmptyObj(value: any): boolean {
     return isObject(value) && Object.keys(value).length > 0;
 }
 
@@ -76,10 +74,10 @@ export function isNonEmptyObj(value) {
  * URL object
  * @return {boolean}
  */
-export function isUrl(value, ...mandatoryFields) {
+export function isUrl(value: string, ...mandatoryFields: string[]): boolean {
     try {
         const parsedUrl = new URL(value);
-        return mandatoryFields.every(f => parsedUrl[f]);
+        return mandatoryFields.every(f => (parsedUrl as any)[f]);
     } catch (urlParsingError) {
         return false;
     }
@@ -91,7 +89,7 @@ export function isUrl(value, ...mandatoryFields) {
  * @param {*} value - The value to check
  * @return {boolean}
  */
-export function isFunction(value) {
+export function isFunction(value: any): boolean {
     return typeof value === 'function';
 }
 
@@ -104,8 +102,8 @@ export function isFunction(value) {
  * @param {boolean} [caseSensitive=false] - Should the check be case sensitive
  * @return {boolean}
  */
-export function isStrIn(value, possibilities, caseSensitive = false) {
-    const _isSameStrCaseInsensitive = str =>
+export function isStrIn(value: string, possibilities: string[], caseSensitive: boolean = false): boolean {
+    const _isSameStrCaseInsensitive = (str: any) =>
         isStr(str) && value.toUpperCase() === str.toUpperCase();
     if (!(isStr(value) && Array.isArray(possibilities))) {
         return false;

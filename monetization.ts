@@ -2,4 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-export { default, Monetization } from './src/monetization.js';
+(window as any).regeneratorRuntime = require('regenerator-runtime');
+
+export { Monetization } from '../monetization';

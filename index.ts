@@ -2,8 +2,8 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
+(window as any).regeneratorRuntime = require('regenerator-runtime');
 
-export * from './identity.js';
-export * from './monetization.js';
-export * from './payment.js';
+export { Identity } from '../identity';
+export { Monetization } from '../monetization';
+export { Payment } from '../payment';

@@ -2,4 +2,6 @@
  * See LICENSE.md in the project root.
  */
 
-export { default, Payment } from './src/payment.js';
+(window as any).regeneratorRuntime = require('regenerator-runtime');
+
+export { Payment } from '../payment';

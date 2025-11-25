@@ -2,9 +2,7 @@
  * See LICENSE.md in the project root.
  */
 
-'use strict';
-
-import SDKError from './SDKError.js';
+import SDKError from './SDKError';
 
 /**
  * Check whether we are able to use web storage
@@ -13,13 +11,16 @@ import SDKError from './SDKError.js';
  * @private
  * @returns {boolean}
  */
-function webStorageWorks(storeProvider) {
+function webStorageWorks(storeProvider: (() => Storage | null) | undefined): boolean {
     if (!storeProvider) {
         return false;
     }
     try {
         const store = storeProvider();
-        const randomKey = 'x-x-x-x'.replace(/x/g, () => Math.random());
+        if (!store) {
+            return false;
+        }
+        const randomKey = 'x-x-x-x'.replace(/x/g, () => String(Math.random()));
         const testValue = 'TEST-VALUE';
         store.setItem(randomKey, testValue);
         const val = store.getItem(randomKey);
@@ -35,12 +36,17 @@ function webStorageWorks(storeProvider) {
  * @private
  */
 class WebStorageCache {
+    store: Storage;
+    get: (key: string) => string | null;
+    set: (key: string, value: string) => void;
+    delete: (key: string) => void;
+
     /**
      * Create web storage cache object
      * @param {Storage} store - A reference to either `sessionStorage` or `localStorage` from a
      * `Window` object
      */
-    constructor(store) {
+    constructor(store: Storage) {
         this.store = store;
         this.get = (key) => this.store.getItem(key);
         this.set = (key, value) => this.store.setItem(key, value);
@@ -53,6 +59,11 @@ class WebStorageCache {
  * @private
  */
 class LiteralCache {
+    store: { [key: string]: any };
+    get: (key: string) => any;
+    set: (key: string, value: any) => any;
+    delete: (key: string) => boolean;
+
     /**
      * Create JS object literal cache object
      */
@@ -71,14 +82,19 @@ const maxExpiresIn = Math.pow(2, 31) - 1;
  * @private
  */
 export default class Cache {
+    cache: WebStorageCache | LiteralCache;
+    type: string;
+
     /**
      * @param {Storage} [storeProvider] - A function to return a WebStorage instance (either
      * `sessionStorage` or `localStorage` from a `Window` object)
      * @throws {SDKError} - If sessionStorage or localStorage are not accessible
      */
-    constructor(storeProvider) {
+    constructor(storeProvider?: () => Storage | null) {
         if (webStorageWorks(storeProvider)) {
-            this.cache = new WebStorageCache(storeProvider());
+            const store = storeProvider!();
+            // At this point webStorageWorks has verified store is not null
+            this.cache = new WebStorageCache(store!);
             this.type = 'WebStorage';
         } else {
             this.cache = new LiteralCache();
@@ -92,15 +108,15 @@ export default class Cache {
      * @private
      * @returns {*} - The value if it exists, otherwise null
      */
-    get(key) {
+    get(key: string): any {
         /**
          * JSON.parse safe wrapper
          * @param {string} raw
          * @returns {*} parsed value or null if failed to parse
          */
-        function getObj(raw) {
+        function getObj(raw: string | null): any {
             try {
-                return JSON.parse(raw);
+                return raw ? JSON.parse(raw) : null;
             } catch (e) {
                 return null;
             }
@@ -115,7 +131,7 @@ export default class Cache {
             this.delete(key);
             return null;
         } catch (e) {
-            throw new SDKError(e);
+            throw new SDKError(String(e));
         }
     }
 
@@ -127,7 +143,7 @@ export default class Cache {
      * @private
      * @returns {void}
      */
-    set(key, value, expiresIn = 0) {
+    set(key: string, value: any, expiresIn: number = 0): void {
         if (expiresIn <= 0) {
             return;
         }
@@ -138,7 +154,7 @@ export default class Cache {
             this.cache.set(key, JSON.stringify({ expiresOn, value }));
             setTimeout(() => this.delete(key), expiresIn);
         } catch (e) {
-            throw new SDKError(e);
+            throw new SDKError(String(e));
         }
     }
 
@@ -148,11 +164,11 @@ export default class Cache {
      * @private
      * @returns {void}
      */
-    delete(key) {
+    delete(key: string): void {
         try {
             this.cache.delete(key);
         } catch (e) {
-            throw new SDKError(e);
+            throw new SDKError(String(e));
         }
     }
 }

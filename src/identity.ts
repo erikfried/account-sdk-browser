@@ -179,6 +179,26 @@ export interface SimplifiedLoginWidgetOptions {
     encoding?: string;
 }
 
+/**
+ * Options for Identity constructor
+ */
+export interface IdentityOptions {
+    /** Example: "1234567890abcdef12345678" */
+    clientId: string;
+    /** Example: "https://id.site.com" */
+    sessionDomain: string;
+    /** Example: "https://site.com" */
+    redirectUri?: string;
+    /** Schibsted account environment: `PRE`, `PRO`, `PRO_NO`, `PRO_FI` or `PRO_DK` */
+    env?: string;
+    /** A function that receives debug log information. If not set, no logging will be done */
+    log?: (...args: any[]) => void;
+    /** window object */
+    window?: Window & typeof globalThis;
+    /** Callback triggered before session refresh redirect happen */
+    callbackBeforeRedirect?: () => void;
+}
+
 const HAS_SESSION_CACHE_KEY = 'hasSession-cache';
 const SESSION_CALL_BLOCKED_CACHE_KEY = 'sessionCallBlocked-cache';
 const SESSION_CALL_BLOCKED_TTL = 1000 * 60 * 5;
@@ -194,23 +214,23 @@ const globalWindow = () => window;
  */
 export class Identity extends EventEmitter {
     _sessionInitiatedSent: boolean;
-    window: any;
+    window: Window & typeof globalThis;
     clientId: string;
-    sessionStorageCache: any;
-    localStorageCache: any;
+    sessionStorageCache: Cache<any>;
+    localStorageCache: Cache<any>;
     redirectUri?: string;
     env: string;
-    log?: any;
-    callbackBeforeRedirect?: any;
+    log?: (...args: any[]) => void;
+    callbackBeforeRedirect?: () => void;
     _sessionDomain?: string;
     _enableSessionCaching: boolean;
     _session: any;
     _usedSessionServiceGetSessionEndpoint: any;
-    _spid: any;
-    _oauthService: any;
-    _sessionService: any;
-    _globalSessionService: any;
-    _bffService: any;
+    _spid: RESTClient;
+    _oauthService: RESTClient;
+    _sessionService: RESTClient;
+    _globalSessionService: RESTClient;
+    _bffService: RESTClient;
     _hasSessionInProgress: any;
     popup: any;
     setVarnishCookie?: boolean;
@@ -218,18 +238,9 @@ export class Identity extends EventEmitter {
     varnishCookieDomain?: string;
 
     /**
-     * @param {object} options
-     * @param {string} options.clientId - Example: "1234567890abcdef12345678"
-     * @param {string} options.sessionDomain - Example: "https://id.site.com"
-     * @param {string} options.redirectUri - Example: "https://site.com"
-     * @param {string} [options.env=PRE] - Schibsted account environment: `PRE`, `PRO`, `PRO_NO`, `PRO_FI` or `PRO_DK`
-     * @param {function} [options.log] - A function that receives debug log information. If not set,
-     * no logging will be done
-     * @param {object} [options.window] - window object
-     * @param {function} [options.callbackBeforeRedirect] - callback triggered before session refresh redirect happen
-     * @throws {SDKError} - If any of options are invalid
+     * @throws {SDKError} If any of options are invalid
      */
-    constructor(options: any) {
+    constructor(options: IdentityOptions) {
         const {
         clientId,
         redirectUri,
@@ -672,7 +683,9 @@ export class Identity extends EventEmitter {
                 if(_checkRedirectionNeed(sessionData)){
                     this._blockSessionCall();
 
-                    await this.callbackBeforeRedirect();
+                    if (this.callbackBeforeRedirect) {
+                        await this.callbackBeforeRedirect();
+                    }
 
                     return this._sessionService.makeUrl((sessionData as any).redirectURL, {tabId: this._getTabId()});
                 }

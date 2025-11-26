@@ -172,11 +172,10 @@ export class RESTClient {
 
     /**
      * Make a GET request
-     * @param {string} pathname - WHATWG pathname ie. 'api/2/endpoint-name'
-     * @param {object} [data={}] - the data payload.
-     * @return {Promise}
+     * @param pathname - WHATWG pathname ie. 'api/2/endpoint-name'
+     * @param data - the data payload.
      */
-    get(pathname, data) {
+    get(pathname: string, data: any = {}) {
         return this.go({ method: 'get', pathname, data });
     }
 

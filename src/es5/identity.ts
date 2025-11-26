@@ -3,4 +3,4 @@
  */
 
 (window as any).regeneratorRuntime = require('regenerator-runtime');
-export { Identity } from '../identity';
+export { Identity } from '../identity.js';

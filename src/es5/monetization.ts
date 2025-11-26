@@ -3,4 +3,4 @@
  */
 
 (window as any).regeneratorRuntime = require('regenerator-runtime');
-export { Monetization } from '../monetization';
+export { Monetization } from '../monetization.js';

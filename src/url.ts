@@ -2,7 +2,7 @@
  * See LICENSE.md in the project root.
  */
 
-import { assert, isNonEmptyString, isUrl, isNonEmptyObj } from './validate';
+import { assert, isNonEmptyString, isUrl, isNonEmptyObj } from './validate.js';
 
 /**
  * A simple utility function that allows looking up URLs from a dictionary

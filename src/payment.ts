@@ -3,13 +3,13 @@
  */
 
 
-import { assert, isNonEmptyString, isUrl, isStr } from './validate';
-import { urlMapper } from './url';
-import { ENDPOINTS } from './config';
-import * as popup from './popup';
-import RESTClient from './RESTClient';
-import * as spidTalk from './spidTalk';
-import { registerGlobal } from './global-registry';
+import { assert, isNonEmptyString, isUrl, isStr } from './validate.js';
+import { urlMapper } from './url.js';
+import { ENDPOINTS } from './config.js';
+import * as popup from './popup.js';
+import RESTClient from './RESTClient.js';
+import * as spidTalk from './spidTalk.js';
+import { registerGlobal } from './global-registry.js';
 
 const globalWindow = () => window;
 

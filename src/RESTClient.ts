@@ -3,10 +3,10 @@
  */
 
 
-import SDKError from './SDKError';
-import { cloneDefined } from './object';
-import { urlMapper } from './url';
-import { assert, isObject, isFunction, isStr, isNonEmptyString } from './validate';
+import SDKError from './SDKError.js';
+import { cloneDefined } from './object.js';
+import { urlMapper } from './url.js';
+import { assert, isObject, isFunction, isStr, isNonEmptyString } from './validate.js';
 
 /**
  * Converts a series of parameters of various types to a string that's suitable for logging.

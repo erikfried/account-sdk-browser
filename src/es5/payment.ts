@@ -3,4 +3,4 @@
  */
 
 (window as any).regeneratorRuntime = require('regenerator-runtime');
-export { Payment } from '../payment';
+export { Payment } from '../payment.js';

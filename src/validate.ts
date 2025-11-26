@@ -2,7 +2,7 @@
  * See LICENSE.md in the project root.
  */
 
-import SDKError from './SDKError';
+import SDKError from './SDKError.js';
 
 /*
  * This module defines a set of validation functions which are used in the rest of the SDK.

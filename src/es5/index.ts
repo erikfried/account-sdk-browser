@@ -4,6 +4,6 @@
 
 (window as any).regeneratorRuntime = require('regenerator-runtime');
 
-export { Identity } from '../identity';
-export { Monetization } from '../monetization';
-export { Payment } from '../payment';
+export { Identity } from '../identity.js';
+export { Monetization } from '../monetization.js';
+export { Payment } from '../payment.js';

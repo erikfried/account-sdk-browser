@@ -6,10 +6,9 @@ import SDKError from './SDKError.js';
 
 /**
  * Check whether we are able to use web storage
- * @param {Storage} storeProvider - A function to return a WebStorage instance (either
+ * @param storeProvider - A function to return a WebStorage instance (either
  * `sessionStorage` or `localStorage` from a `Window` object)
  * @private
- * @returns {boolean}
  */
 function webStorageWorks(storeProvider?: () => Storage): boolean {
     if (!storeProvider) {
@@ -34,6 +33,11 @@ interface CacheInterface {
     delete: (key: string) => void;
 }
 
+interface CachedObject<T> {
+    expiresOn: number;
+    value: T;
+}
+
 /**
  * Will be used if web storage is available
  * @private
@@ -46,7 +50,7 @@ class WebStorageCache implements CacheInterface {
 
     /**
      * Create web storage cache object
-     * @param {Storage} store - A reference to either `sessionStorage` or `localStorage` from a
+     * @param store - A reference to either `sessionStorage` or `localStorage` from a
      * `Window` object
      */
     constructor(store: Storage) {
@@ -89,9 +93,9 @@ export default class Cache<T = unknown> {
     type: string;
 
     /**
-     * @param {Storage} [storeProvider] - A function to return a WebStorage instance (either
+     * @param storeProvider - A function to return a WebStorage instance (either
      * `sessionStorage` or `localStorage` from a `Window` object)
-     * @throws {SDKError} - If sessionStorage or localStorage are not accessible
+     * @throws {SDKError} If sessionStorage or localStorage are not accessible
      */
     constructor(storeProvider?: () => Storage) {
         if (webStorageWorks(storeProvider)) {
@@ -105,17 +109,16 @@ export default class Cache<T = unknown> {
 
     /**
      * Get a value from cache (checks that the object has not expired)
-     * @param {string} key
+     * @param key - The cache key
      * @private
-     * @returns {T | null} - The value if it exists, otherwise null
      */
     get(key: string): T | null {
         /**
          * JSON.parse safe wrapper
-         * @param {string} raw
-         * @returns {*} parsed value or null if failed to parse
+         * @param raw - The raw string from storage
+         * @returns Parsed value or null if failed to parse
          */
-        function getObj(raw: string | null): any {
+        function getObj(raw: string | null): CachedObject<T> | null {
             try {
                 return raw ? JSON.parse(raw) : null;
             } catch (e) {
@@ -125,7 +128,7 @@ export default class Cache<T = unknown> {
 
         try {
             const raw = this.cache.get(key);
-            let obj = getObj(raw);
+            const obj = getObj(raw);
             if (obj && Number.isInteger(obj.expiresOn) && obj.expiresOn > Date.now()) {
                 return obj.value;
             }
@@ -138,11 +141,10 @@ export default class Cache<T = unknown> {
 
     /**
      * Set a cache entry
-     * @param {string} key
-     * @param {T} value
-     * @param {Number} expiresIn - Value in milliseconds until the entry expires
+     * @param key - The cache key
+     * @param value - The value to cache
+     * @param expiresIn - Value in milliseconds until the entry expires
      * @private
-     * @returns {void}
      */
     set(key: string, value: T, expiresIn = 0): void {
         if (expiresIn <= 0) {
@@ -161,9 +163,8 @@ export default class Cache<T = unknown> {
 
     /**
      * Delete a cache entry
-     * @param {string} key
+     * @param key - The cache key
      * @private
-     * @returns {void}
      */
     delete(key: string): void {
         try {

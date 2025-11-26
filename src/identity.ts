@@ -17,108 +17,119 @@ import version from './version.js';
 import { registerGlobal } from './global-registry.js';
 
 /**
- * @typedef {object} LoginOptions
- * @property {string} state - An opaque value used by the client to maintain state between
- * the request and callback. It's also recommended to prevent CSRF {@link https://tools.ietf.org/html/rfc6749#section-10.12}
- * @property {string} [acrValues] - Authentication Context Class Reference Values. If
- * omitted, the user will be asked to authenticate using username+password.
- * For 2FA (Two-Factor Authentication) possible values are `sms`, `otp` (one time password),
- * `password` (will force password confirmation, even if user is already logged in), `eid`. Those values might
- * be mixed as space-separated string. To make sure that user has authenticated with 2FA you need
- * to verify AMR (Authentication Methods References) claim in ID token.
- * Might also be used to ensure additional acr (sms, otp) for already logged-in users.
- * Supported value is also 'otp-email' means one time password using email.
- * @property {string} [scope] - The OAuth scopes for the tokens. This is a list of
- * scopes, separated by space. If the list of scopes contains `openid`, the generated tokens
- * includes the id token which can be useful for getting information about the user. Omitting
- * scope is allowed, while `invalid_scope` is returned when the client asks for a scope you
- * aren’t allowed to request. {@link https://tools.ietf.org/html/rfc6749#section-3.3}
- * @property {string} [redirectUri] - Redirect uri that will receive the
- * code. Must exactly match a redirectUri from your client in self-service
- * @property {boolean} [preferPopup] - Should we try to open a popup window?
- * @property {string} [loginHint] - User email or UUID hint
- * @property {string} [tag] - Pulse tag
- * @property {string} [teaser] - Teaser slug. Teaser with given slug will be displayed
- * in place of default teaser
- * @property {number|string} [maxAge] - Specifies the allowable elapsed time in seconds since
- * the last time the End-User was actively authenticated. If last authentication time is more
- * than maxAge seconds in the past, re-authentication will be required. See the OpenID Connect
- * spec section 3.1.2.1 for more information
- * @property {string} [locale] - Optional parameter to overwrite client locale setting.
- * New flows supports nb_NO, fi_FI, sv_SE, en_US
- * @property {boolean} [oneStepLogin] - Display username and password on one screen
- * @property {string} [prompt] - String that specifies whether the Authorization Server prompts the
- * End-User for re-authentication or confirm account screen. Supported values: `select_account` or `login`
- * @property {string} [xDomainId] - Identifier for cross-domain tracking in Pulse
- * @property {string} [xEnvironmentId] - Environment for cross-domain tracking in Pulse
- * @property {string} [originCampaign] - Campaign identifier for tracking in Pulse
+ * Options for login flow
  */
+export interface LoginOptions {
+    /** An opaque value used by the client to maintain state between the request and callback. It's also recommended to prevent CSRF {@link https://tools.ietf.org/html/rfc6749#section-10.12} */
+    state: string;
+    /** Authentication Context Class Reference Values. If omitted, the user will be asked to authenticate using username+password. For 2FA (Two-Factor Authentication) possible values are `sms`, `otp` (one time password), `password` (will force password confirmation, even if user is already logged in), `eid`. Those values might be mixed as space-separated string. To make sure that user has authenticated with 2FA you need to verify AMR (Authentication Methods References) claim in ID token. Might also be used to ensure additional acr (sms, otp) for already logged-in users. Supported value is also 'otp-email' means one time password using email. */
+    acrValues?: string;
+    /** The OAuth scopes for the tokens. This is a list of scopes, separated by space. If the list of scopes contains `openid`, the generated tokens includes the id token which can be useful for getting information about the user. Omitting scope is allowed, while `invalid_scope` is returned when the client asks for a scope you aren't allowed to request. {@link https://tools.ietf.org/html/rfc6749#section-3.3} */
+    scope?: string;
+    /** Redirect uri that will receive the code. Must exactly match a redirectUri from your client in self-service */
+    redirectUri?: string;
+    /** Should we try to open a popup window? */
+    preferPopup?: boolean;
+    /** User email or UUID hint */
+    loginHint?: string;
+    /** Pulse tag */
+    tag?: string;
+    /** Teaser slug. Teaser with given slug will be displayed in place of default teaser */
+    teaser?: string;
+    /** Specifies the allowable elapsed time in seconds since the last time the End-User was actively authenticated. If last authentication time is more than maxAge seconds in the past, re-authentication will be required. See the OpenID Connect spec section 3.1.2.1 for more information */
+    maxAge?: number | string;
+    /** Optional parameter to overwrite client locale setting. New flows supports nb_NO, fi_FI, sv_SE, en_US */
+    locale?: string;
+    /** Display username and password on one screen */
+    oneStepLogin?: boolean;
+    /** String that specifies whether the Authorization Server prompts the End-User for re-authentication or confirm account screen. Supported values: `select_account` or `login` */
+    prompt?: string;
+    /** Identifier for cross-domain tracking in Pulse */
+    xDomainId?: string;
+    /** Environment for cross-domain tracking in Pulse */
+    xEnvironmentId?: string;
+    /** Campaign identifier for tracking in Pulse */
+    originCampaign?: string;
+}
 /**
- * @typedef {object} SimplifiedLoginWidgetLoginOptions
- * @property {string|function(): (string|Promise<string>)} state - An opaque value used by the client to maintain state between
- * the request and callback. It's also recommended to prevent CSRF {@link https://tools.ietf.org/html/rfc6749#section-10.12}
- * @property {string} [acrValues] - Authentication Context Class Reference Values. If
- * omitted, the user will be asked to authenticate using username+password.
- * For 2FA (Two-Factor Authentication) possible values are `sms`, `otp` (one time password) and
- * `password` (will force password confirmation, even if user is already logged in). Those values might
- * be mixed as space-separated string. To make sure that user has authenticated with 2FA you need
- * to verify AMR (Authentication Methods References) claim in ID token.
- * Might also be used to ensure additional acr (sms, otp) for already logged-in users.
- * Supported value is also 'otp-email' means one time password using email.
- * @property {string} [scope] - The OAuth scopes for the tokens. This is a list of
- * scopes, separated by space. If the list of scopes contains `openid`, the generated tokens
- * includes the id token which can be useful for getting information about the user. Omitting
- * scope is allowed, while `invalid_scope` is returned when the client asks for a scope you
- * aren’t allowed to request. {@link https://tools.ietf.org/html/rfc6749#section-3.3}
- * @property {string} [redirectUri] - Redirect uri that will receive the
- * code. Must exactly match a redirectUri from your client in self-service
- * @property {boolean} [preferPopup] - Should we try to open a popup window?
- * @property {string} [loginHint] - User email or UUID hint
- * @property {string} [tag] - Pulse tag
- * @property {string} [teaser] - Teaser slug. Teaser with given slug will be displayed
- * in place of default teaser
- * @property {number|string} [maxAge] - Specifies the allowable elapsed time in seconds since
- * the last time the End-User was actively authenticated. If last authentication time is more
- * than maxAge seconds in the past, re-authentication will be required. See the OpenID Connect
- * spec section 3.1.2.1 for more information
- * @property {string} [locale] - Optional parameter to overwrite client locale setting.
- * New flows supports nb_NO, fi_FI, sv_SE, en_US
- * @property {boolean} [oneStepLogin] - Display username and password on one screen
- * @property {string} [prompt] - String that specifies whether the Authorization Server prompts the
- * End-User for reauthentication or confirm account screen. Supported values: `select_account` or `login`
- * @property {string} [xDomainId] - Identifier for cross-domain tracking in Pulse
- * @property {string} [xEnvironmentId] - Environment for cross-domain tracking in Pulse
- * @property {string} [originCampaign] - Campaign identifier for tracking in Pulse
+ * Options for simplified login widget
  */
+export interface SimplifiedLoginWidgetLoginOptions {
+    /** An opaque value used by the client to maintain state between the request and callback. It's also recommended to prevent CSRF {@link https://tools.ietf.org/html/rfc6749#section-10.12} */
+    state: string | (() => string | Promise<string>);
+    /** Authentication Context Class Reference Values. If omitted, the user will be asked to authenticate using username+password. For 2FA (Two-Factor Authentication) possible values are `sms`, `otp` (one time password) and `password` (will force password confirmation, even if user is already logged in). Those values might be mixed as space-separated string. To make sure that user has authenticated with 2FA you need to verify AMR (Authentication Methods References) claim in ID token. Might also be used to ensure additional acr (sms, otp) for already logged-in users. Supported value is also 'otp-email' means one time password using email. */
+    acrValues?: string;
+    /** The OAuth scopes for the tokens. This is a list of scopes, separated by space. If the list of scopes contains `openid`, the generated tokens includes the id token which can be useful for getting information about the user. Omitting scope is allowed, while `invalid_scope` is returned when the client asks for a scope you aren't allowed to request. {@link https://tools.ietf.org/html/rfc6749#section-3.3} */
+    scope?: string;
+    /** Redirect uri that will receive the code. Must exactly match a redirectUri from your client in self-service */
+    redirectUri?: string;
+    /** Should we try to open a popup window? */
+    preferPopup?: boolean;
+    /** User email or UUID hint */
+    loginHint?: string;
+    /** Pulse tag */
+    tag?: string;
+    /** Teaser slug. Teaser with given slug will be displayed in place of default teaser */
+    teaser?: string;
+    /** Specifies the allowable elapsed time in seconds since the last time the End-User was actively authenticated. If last authentication time is more than maxAge seconds in the past, re-authentication will be required. See the OpenID Connect spec section 3.1.2.1 for more information */
+    maxAge?: number | string;
+    /** Optional parameter to overwrite client locale setting. New flows supports nb_NO, fi_FI, sv_SE, en_US */
+    locale?: string;
+    /** Display username and password on one screen */
+    oneStepLogin?: boolean;
+    /** String that specifies whether the Authorization Server prompts the End-User for reauthentication or confirm account screen. Supported values: `select_account` or `login` */
+    prompt?: string;
+    /** Identifier for cross-domain tracking in Pulse */
+    xDomainId?: string;
+    /** Environment for cross-domain tracking in Pulse */
+    xEnvironmentId?: string;
+    /** Campaign identifier for tracking in Pulse */
+    originCampaign?: string;
+}
 
 /**
- * @typedef {object} HasSessionSuccessResponse
- * @property {boolean} result - Is the user connected to the merchant? (it means that the merchant
- * id is in the list of merchants listed of this user in the database)? Example: false
- * @property {string} userStatus - Example: 'notConnected' or 'connected'. Deprecated, use
- * `Identity.isConnected()`
- * @property {string} baseDomain - Example: 'localhost'
- * @property {string} id - Example: '58eca10fdbb9f6df72c3368f'. Obsolete
- * @property {number} userId - Example: 37162
- * @property {string} uuid - Example: 'b3b23aa7-34f2-5d02-a10e-5a3455c6ab2c'
- * @property {string} sp_id - Example: 'eyJjbGllbnRfaWQ...'
- * @property {number} expiresIn - Example: 30 * 60 * 1000 (for 30 minutes)
- * @property {number} serverTime - Example: 1506285759
- * @property {string} sig - Example: 'NCdzXaz4ZRb7...' The sig parameter is a concatenation of an
- * HMAC SHA-256 signature string, a dot (.) and a base64url encoded JSON object (session).
- * {@link http://techdocs.spid.no/sdks/js/response-signature-and-validation/}
- * @property {string} displayName - (Only for connected users) Example: 'batman'
- * @property {string} givenName - (Only for connected users) Example: 'Bruce'
- * @property {string} familyName - (Only for connected users) Example: 'Wayne'
- * @property {string} gender - (Only for connected users) Example: 'male', 'female', 'undisclosed'
- * @property {string} photo - (Only for connected users) Example:
- * 'http://www.srv.com/some/picture.jpg'
- * @property {boolean} tracking - (Only for connected users)
- * @property {boolean} clientAgreementAccepted - (Only for connected users)
- * @property {boolean} defaultAgreementAccepted - (Only for connected users)
- * @property {string} pairId
- * @property {string} sdrn
+ * Response from hasSession when successful
  */
+export interface HasSessionSuccessResponse {
+    /** Is the user connected to the merchant? (it means that the merchant id is in the list of merchants listed of this user in the database). Example: false */
+    result: boolean;
+    /** Example: 'notConnected' or 'connected'. Deprecated, use `Identity.isConnected()` */
+    userStatus: string;
+    /** Example: 'localhost' */
+    baseDomain: string;
+    /** Example: '58eca10fdbb9f6df72c3368f'. Obsolete */
+    id: string;
+    /** Example: 37162 */
+    userId: number;
+    /** Example: 'b3b23aa7-34f2-5d02-a10e-5a3455c6ab2c' */
+    uuid: string;
+    /** Example: 'eyJjbGllbnRfaWQ...' */
+    sp_id: string;
+    /** Example: 30 * 60 * 1000 (for 30 minutes) */
+    expiresIn: number;
+    /** Example: 1506285759 */
+    serverTime: number;
+    /** Example: 'NCdzXaz4ZRb7...' The sig parameter is a concatenation of an HMAC SHA-256 signature string, a dot (.) and a base64url encoded JSON object (session). {@link http://techdocs.spid.no/sdks/js/response-signature-and-validation/} */
+    sig: string;
+    /** (Only for connected users) Example: 'batman' */
+    displayName?: string;
+    /** (Only for connected users) Example: 'Bruce' */
+    givenName?: string;
+    /** (Only for connected users) Example: 'Wayne' */
+    familyName?: string;
+    /** (Only for connected users) Example: 'male', 'female', 'undisclosed' */
+    gender?: string;
+    /** (Only for connected users) Example: 'http://www.srv.com/some/picture.jpg' */
+    photo?: string;
+    /** (Only for connected users) */
+    tracking?: boolean;
+    /** (Only for connected users) */
+    clientAgreementAccepted?: boolean;
+    /** (Only for connected users) */
+    defaultAgreementAccepted?: boolean;
+    pairId?: string;
+    sdrn?: string;
+}
 
 /**
  * Emitted when an error happens (useful for debugging)
@@ -126,29 +137,47 @@ import { registerGlobal } from './global-registry.js';
  */
 
 /**
- * @typedef {object} HasSessionFailureResponse
- * @property {object} error
- * @property {number} error.code - Typically an HTTP response code. Example: 401
- * @property {string} error.description - Example: "No session found!"
- * @property {string} error.type - Example: "UserException"
- * @property {object} response
- * @property {string} response.baseDomain - Example: "localhost"
- * @property {number} (response as any).expiresIn - Time span in milliseconds. Example: 30 * 60 * 1000 (for 30 minutes)
- * @property {boolean} response.result
- * @property {number} response.serverTime - Server time in seconds since the Unix Epoch. Example: 1506287788
+ * Response from hasSession when failed
  */
+export interface HasSessionFailureResponse {
+    error: {
+        /** Typically an HTTP response code. Example: 401 */
+        code: number;
+        /** Example: "No session found!" */
+        description: string;
+        /** Example: "UserException" */
+        type: string;
+    };
+    response: {
+        /** Example: "localhost" */
+        baseDomain: string;
+        /** Time span in milliseconds. Example: 30 * 60 * 1000 (for 30 minutes) */
+        expiresIn: number;
+        result: boolean;
+        /** Server time in seconds since the Unix Epoch. Example: 1506287788 */
+        serverTime: number;
+    };
+}
 
 /**
- * @typedef {object} SimplifiedLoginData
- * @property {string} identifier - Deprecated: User UUID, to be be used as `loginHint` for {@link Identity#login}
- * @property {string} display_text - Human-readable user identifier
- * @property {string} client_name - Client name
+ * Data returned from simplified login
  */
+export interface SimplifiedLoginData {
+    /** Deprecated: User UUID, to be be used as `loginHint` for {@link Identity#login} */
+    identifier: string;
+    /** Human-readable user identifier */
+    display_text: string;
+    /** Client name */
+    client_name: string;
+}
 
 /**
- * @typedef {object} SimplifiedLoginWidgetOptions
- * @property {string} encoding - expected encoding of simplified login widget. Could be utf-8 (default), iso-8859-1 or iso-8859-15
+ * Options for simplified login widget
  */
+export interface SimplifiedLoginWidgetOptions {
+    /** Expected encoding of simplified login widget. Could be utf-8 (default), iso-8859-1 or iso-8859-15 */
+    encoding?: string;
+}
 
 const HAS_SESSION_CACHE_KEY = 'hasSession-cache';
 const SESSION_CALL_BLOCKED_CACHE_KEY = 'sessionCallBlocked-cache';

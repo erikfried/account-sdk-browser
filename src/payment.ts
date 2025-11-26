@@ -57,7 +57,8 @@ export class Payment {
     _setSpidServerUrl(url) {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         this._spid = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.SPiD),
+            serverUrl: url,
+            envDic: ENDPOINTS.SPiD,
             defaultParams: { client_id: this.clientId, redirect_uri: this.redirectUri },
         });
     }
@@ -71,7 +72,8 @@ export class Payment {
     _setBffServerUrl(url) {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         this._bff = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.BFF),
+            serverUrl: url,
+            envDic: ENDPOINTS.BFF,
             defaultParams: { client_id: this.clientId, redirect_uri: this.redirectUri },
         });
     }

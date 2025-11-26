@@ -65,7 +65,8 @@ export class Monetization extends EventEmitter {
     _setSpidServerUrl(url) {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         this._spid = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.SPiD),
+            serverUrl: url,
+            envDic: ENDPOINTS.SPiD,
             defaultParams: { client_id: this.clientId, redirect_uri: this.redirectUri },
         });
     }

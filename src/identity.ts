@@ -310,7 +310,8 @@ export class Identity extends EventEmitter {
     _setSpidServerUrl(url) {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         this._spid = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.SPiD),
+            serverUrl: url,
+            envDic: ENDPOINTS.SPiD,
             log: this.log,
             defaultParams: { client_id: this.clientId, redirect_uri: this.redirectUri },
         });
@@ -325,7 +326,8 @@ export class Identity extends EventEmitter {
     _setOauthServerUrl(url) {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         this._oauthService = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.SPiD),
+            serverUrl: url,
+            envDic: ENDPOINTS.SPiD,
             log: this.log,
             defaultParams: { client_id: this.clientId, redirect_uri: this.redirectUri },
         });
@@ -340,7 +342,8 @@ export class Identity extends EventEmitter {
     _setBffServerUrl(url) {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         this._bffService = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.BFF),
+            serverUrl: url,
+            envDic: ENDPOINTS.BFF,
             log: this.log,
             defaultParams: { client_id: this.clientId, redirect_uri: this.redirectUri },
         });
@@ -372,7 +375,8 @@ export class Identity extends EventEmitter {
         assert(isStr(url), `url parameter is invalid: ${url}`);
         const client_sdrn = `sdrn:${NAMESPACE[this.env]}:client:${this.clientId}`;
         this._globalSessionService = new RESTClient({
-            serverUrl: urlMapper(url, ENDPOINTS.SESSION_SERVICE),
+            serverUrl: url,
+            envDic: ENDPOINTS.SESSION_SERVICE,
             log: this.log,
             defaultParams: { client_sdrn, sdk_version: version },
         });

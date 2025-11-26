@@ -199,6 +199,26 @@ export interface IdentityOptions {
     callbackBeforeRedirect?: () => void;
 }
 
+/**
+ * Options for Identity constructor
+ */
+export interface IdentityOptions {
+    /** Example: "1234567890abcdef12345678" */
+    clientId: string;
+    /** Example: "https://id.site.com" */
+    sessionDomain: string;
+    /** Example: "https://site.com" */
+    redirectUri?: string;
+    /** Schibsted account environment: `PRE`, `PRO`, `PRO_NO`, `PRO_FI` or `PRO_DK` */
+    env?: string;
+    /** A function that receives debug log information. If not set, no logging will be done */
+    log?: (...args: any[]) => void;
+    /** window object */
+    window?: Window & typeof globalThis;
+    /** Callback triggered before session refresh redirect happen */
+    callbackBeforeRedirect?: () => void;
+}
+
 const HAS_SESSION_CACHE_KEY = 'hasSession-cache';
 const SESSION_CALL_BLOCKED_CACHE_KEY = 'sessionCallBlocked-cache';
 const SESSION_CALL_BLOCKED_TTL = 1000 * 60 * 5;
@@ -221,7 +241,7 @@ export class Identity extends EventEmitter {
     redirectUri?: string;
     env: string;
     log?: (...args: any[]) => void;
-    callbackBeforeRedirect?: () => void;
+    callbackBeforeRedirect: () => void;
     _sessionDomain?: string;
     _enableSessionCaching: boolean;
     _session: any;

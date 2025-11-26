@@ -84,7 +84,7 @@ const maxExpiresIn = Math.pow(2, 31) - 1;
  * Cache class that attempts WebStorage (session/local storage), and falls back to JS object literal
  * @private
  */
-export default class Cache {
+export default class Cache<T = unknown> {
     cache: CacheInterface;
     type: string;
 
@@ -107,9 +107,9 @@ export default class Cache {
      * Get a value from cache (checks that the object has not expired)
      * @param {string} key
      * @private
-     * @returns {*} - The value if it exists, otherwise null
+     * @returns {T | null} - The value if it exists, otherwise null
      */
-    get(key: string): any {
+    get(key: string): T | null {
         /**
          * JSON.parse safe wrapper
          * @param {string} raw
@@ -139,12 +139,12 @@ export default class Cache {
     /**
      * Set a cache entry
      * @param {string} key
-     * @param {*} value
+     * @param {T} value
      * @param {Number} expiresIn - Value in milliseconds until the entry expires
      * @private
      * @returns {void}
      */
-    set(key: string, value: any, expiresIn = 0): void {
+    set(key: string, value: T, expiresIn = 0): void {
         if (expiresIn <= 0) {
             return;
         }

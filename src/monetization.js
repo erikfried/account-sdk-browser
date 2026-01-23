@@ -40,6 +40,7 @@ export class Monetization extends EventEmitter {
         this.clientId = clientId;
         this.env = env;
         this.redirectUri = redirectUri;
+        this.pendingHasAccessRequests = {};
         this._setSpidServerUrl(env);
 
         if (sessionDomain) {
@@ -103,7 +104,15 @@ export class Monetization extends EventEmitter {
         const cacheKey = this._accessCacheKey(productIds, userId);
         let data = this.cache.get(cacheKey);
         if (!data) {
-            data = await this._sessionService.get(`/hasAccess/${sortedIds.join(',')}`);
+            if (!this.pendingHasAccessRequests[cacheKey]) {
+                this.pendingHasAccessRequests[cacheKey] = this._sessionService.get(`/hasAccess/${sortedIds.join(',')}`);
+            }
+            try {
+                data = await this.pendingHasAccessRequests[cacheKey];
+            } finally {
+                // If it rejects, we still want to clear the pending request
+                delete this.pendingHasAccessRequests[cacheKey];
+            }
             const expiresSeconds = data.ttl;
             this.cache.set(cacheKey, data, expiresSeconds * 1000);
         }

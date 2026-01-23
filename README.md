@@ -27,12 +27,9 @@ domain, your local domain should be local.sdk-example.com.
 
 1. Do `npm install --save @schibsted/account-sdk-browser`
 1. Use this library as you would any other npm module: `import { Identity, Monetization, Payment } from '@schibsted/account-sdk-browser'`
-   With CommonJS it is possible to `require` the modules Identity, Monetization and Payment
-   by appending `/identity`, `/monetization'` or `/payment'`.
 1. Build your site as you prefer. This library uses modern JavaScript syntax (including async/await
    and other ES2017 and WHATWG features) by default. We recommend that you do any transpilation
-   yourself for the browser versions you need to cater to. See [this paragraph](#polyfills) for
-   info about our Babel-ified version and info about polyfills.
+   yourself for the browser versions you need to cater to. We do not add polyfills.
 1. Initiate the SDK and provide at least `clientId`, `env` and `sessionDomain`.
 
 If this is for a new site and there is no sessionDomain yet, contact
@@ -64,7 +61,7 @@ initialized.
 When a user wants to log in to your site, you direct them to a UI flow hosted by **Schibsted Account**.
 We authenticate the user and redirect them back to your site. This final redirect back to your site is performed in accordance with the OAuth2 specification.
 This means we pass a `code` in the query string of that redirect URI.
-You can use that `code` on your site's backend, along with your client credentials (client ID and secret), to obtain an *Access Token* (AT) and a *Refresh Token* (RT).
+You can use that `code` on your site's backend, along with your client credentials (client ID and secret), to obtain an _Access Token_ (AT) and a _Refresh Token_ (RT).
 You should not send the AT (and **never** the RT!) to the browser. Instead, keep them on the server side and associate them with the specific user session.
 This allows you to call Schibsted Account APIs on behalf of that user.
 
@@ -100,20 +97,20 @@ Let's start with a bit of example code:
 #### Example
 
 ```javascript
-import { Identity } from '@schibsted/account-sdk-browser';
+import { Identity } from "@schibsted/account-sdk-browser";
 
 const identity = new Identity({
-    clientId: '56e9a5d1eee0000000000000',
-    redirectUri: 'https://awesomenews.site', // ensure it's listed in selfservice
-    env: 'PRE', // Schibsted account env. A url or a special key: 'PRE', 'PRO', 'PRO_NO', 'PRO_FI' or 'PRO_DK'
-    sessionDomain: 'https://id.awesomenews.site', // client-configured session-service domain
+    clientId: "56e9a5d1eee0000000000000",
+    redirectUri: "https://awesomenews.site", // ensure it's listed in selfservice
+    env: "PRE", // Schibsted account env. A url or a special key: 'PRE', 'PRO', 'PRO_NO', 'PRO_FI' or 'PRO_DK'
+    sessionDomain: "https://id.awesomenews.site", // client-configured session-service domain
 });
 
 async function whenSiteLoaded() {
-    const loginContainer = document.getElementById('login-container');
+    const loginContainer = document.getElementById("login-container");
     if (await identity.isLoggedIn()) {
         const user = await identity.getUser();
-        const span = document.createElement('span');
+        const span = document.createElement("span");
         span.textContent = `Hello ${user.givenName}`;
         loginContainer.appendChild(span);
     } else {
@@ -122,7 +119,7 @@ async function whenSiteLoaded() {
 }
 
 function userClicksLogIn() {
-    identity.login({ state: 'some-random-string-1234-foobar-wonky-pig' });
+    identity.login({ state: "some-random-string-1234-foobar-wonky-pig" });
 }
 ```
 
@@ -158,23 +155,23 @@ attacks. For example this can be accomplished by:
 Although Schibsted account abstracts away the details of how the users sign up or log in, it's worth
 mentioning that your end users have a few ways to log in:
 
-* Username & password: pretty self-explanatory; users register using an email address and a
-    self-chosen password
-*  Passwordless - email: here, the users enter their email address and receive a one-time code that
-    they can use to log in
-*  Multifactor authentication: first client indicates which methods should be preferred, later these
-    will be included (if fulfilled) in `AMR` claim of IDToken
+- Username & password: pretty self-explanatory; users register using an email address and a
+  self-chosen password
+- Passwordless - email: here, the users enter their email address and receive a one-time code that
+  they can use to log in
+- Multifactor authentication: first client indicates which methods should be preferred, later these
+  will be included (if fulfilled) in `AMR` claim of IDToken
 
 The default is username & password. If you wish to use one of the passwordless login methods, the
 `login()` function takes an optional parameter called `acrValues` (Authentication Context Class Reference).
 The `acrValues` parameter with multifactor authentication can take following values:
 
-*  `eid` - authentication using BankID (for DEV and PRE environments you can choose between country specific solution by specifying `eid-no` or `eid-se` instead)
-*  `otp-email` - passwordless authentication using code sent to registered email
-*  `password` - force password authentication (even if user is already logged in)
-*  `otp` - authentication using registered one time code generator (https://tools.ietf.org/html/rfc6238)
-*  `sms` - authentication using SMS code sent to phone number
-*  `password otp sms` - those authentication methods might be combined
+- `eid` - authentication using BankID (for DEV and PRE environments you can choose between country specific solution by specifying `eid-no` or `eid-se` instead)
+- `otp-email` - passwordless authentication using code sent to registered email
+- `password` - force password authentication (even if user is already logged in)
+- `otp` - authentication using registered one time code generator (https://tools.ietf.org/html/rfc6238)
+- `sms` - authentication using SMS code sent to phone number
+- `password otp sms` - those authentication methods might be combined
 
 The classic way to authenticate a user, is to send them from your site to the Schibsted account
 domain, let the user authenticate there, and then have us redirect them back to your site. If you
@@ -193,16 +190,16 @@ Schibsted account relies on browser cookies to determine whether a user is recog
 The SDK provides functions that can be used to check if the user that's visiting your site is
 already a Schibsted user or not.
 
-*  [Identity#isLoggedIn](https://schibsted.github.io/account-sdk-browser/Identity.html#isLoggedIn)
-    tells you if the user that is visiting your site is already logged in to Schibsted account or not.
+- [Identity#isLoggedIn](https://schibsted.github.io/account-sdk-browser/Identity.html#isLoggedIn)
+  tells you if the user that is visiting your site is already logged in to Schibsted account or not.
 
-*  [Identity#isConnected](https://schibsted.github.io/account-sdk-browser/Identity.html#isConnected)
-    tells you if the user is connected to your client. A user might have `isLoggedIn=true` and at the
-    same time `isConnected=false` if they have logged in to Schibsted account, but not accepted terms
-    and privacy policy for your site.
+- [Identity#isConnected](https://schibsted.github.io/account-sdk-browser/Identity.html#isConnected)
+  tells you if the user is connected to your client. A user might have `isLoggedIn=true` and at the
+  same time `isConnected=false` if they have logged in to Schibsted account, but not accepted terms
+  and privacy policy for your site.
 
 If you've lately changed your terms & conditions, maybe the user still hasn't accepted them. In that
-case they are considered *not connected*. In that case, if they click "Log in" from your site, we
+case they are considered _not connected_. In that case, if they click "Log in" from your site, we
 will just ask them to accept those terms and redirect them right back to your site.
 
 #### Logging out
@@ -221,13 +218,13 @@ feature id's.
 #### Example
 
 ```javascript
-import { Monetization } from '@schibsted/account-sdk-browser';
+import { Monetization } from "@schibsted/account-sdk-browser";
 
 const monetization = new Monetization({
-    clientId: '56e9a5d1eee0000000000000',
-    redirectUri: 'https://awesomenews.site', // ensure it's listed in selfservice
-    sessionDomain: 'https://id.aweseome.site', // client-configured session-service domain
-    env: 'PRE', // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
+    clientId: "56e9a5d1eee0000000000000",
+    redirectUri: "https://awesomenews.site", // ensure it's listed in selfservice
+    sessionDomain: "https://id.aweseome.site", // client-configured session-service domain
+    env: "PRE", // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
 });
 
 try {
@@ -248,40 +245,21 @@ pages for redeeming voucher codes, reviewing payment history, and more.
 #### Example
 
 ```javascript
-import { Payment } from '@schibsted/account-sdk-browser';
+import { Payment } from "@schibsted/account-sdk-browser";
 
 const paymentSDK = new Payment({
-    clientId: '56e9a5d1eee0000000000000',
-    redirectUri: 'https://awesomenews.site', // ensure it's listed in selfservice
-    env: 'PRE', // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
+    clientId: "56e9a5d1eee0000000000000",
+    redirectUri: "https://awesomenews.site", // ensure it's listed in selfservice
+    env: "PRE", // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
 });
 
 // Get the url to paymentSDK with paylink
-const paylink = '...';
+const paylink = "...";
 const paylinkUrl = paymentSDK.purchasePaylinkUrl(paylink);
 
 // Or another example --- pay with paylink in a popup
 paymentSDK.payWithPaylink(paylink);
 ```
-
-## Appendix
-
-#### Polyfills
-
-This SDK uses modern JavaScript features. If you support older browsers, you should use a tool like
-babel to transform the JavaScript as needed. However, since certain teams have deployment pipelines
-where it's difficult to do their own transpilation, we do provide some opt-in es5 files as well:
-
-1. `@schibsted/account-sdk-browser/es5`: Include both `Identity`, `Monetization` and `Payment`.
-1. `@schibsted/account-sdk-browser/es5/global`: Include both `Identity`, `Monetization` and
-   `Payment`. In addition, add them as variables to the global `window` object.
-1. `@schibsted/account-sdk-browser/es5/identity`, `@schibsted/account-sdk-browser/es5/monetization`
-   or `@schibsted/account-sdk-browser/es5/payment` can be used to only include each class by itself.
-
-But then regardless of whether you use the es5 versions or not, you might need to polyfill certain
-things that might be missing in the browsers you wish to support. A quick test using IE11 showed
-that we needed polyfills for `Promise`, `URL`, `Object.entries`, `fetch`, `Number.isFinite` and
-`Number.isInteger`.
 
 #### Cookies
 
@@ -292,24 +270,24 @@ browser side. Nevertheless, here is a short description of them.
    production environments is `vgs_email`, because reasons (on PRE, it is called `spid-pre-data`).
    It's a JSON string that's encoded using the standard `encodeURIComponent()` function and is an
    object that contains two pieces of information that's important:
-    * `remember`: if set to `true`, the user chose to be remembered and this means we usually support
+    - `remember`: if set to `true`, the user chose to be remembered and this means we usually support
       auto-login (that is, if you call the Schibsted account hassession service, and no session can
       be found in the session database, it will automatically create a new one for the user so that
       they don't have to authenticate again. If it is `false`, it should be interpreted as the user
       does not want to be automatically logged in to any site when their session expires
-    * `v`: the version number
+    - `v`: the version number
 1. The **session** cookies: Cookie names in production environments are `identity`, and `SPID_SE` or
    `SPID_NO`. It contains:
-    * `user`: an object (if it's missing, a call to hassession will return a `401` with a
+    - `user`: an object (if it's missing, a call to hassession will return a `401` with a
       `UserException` that says `No session found`)
-        * `userId` identifies the user. We use this property to compare "old" user with "new" user and
+        - `userId` identifies the user. We use this property to compare "old" user with "new" user and
           fire events that indicate that the user has changed
-        * `is_logged_in` indicates if the user is logged in
-    * `user_tags`: a map that contains some flags about the user; namely:
-        * `is_logged_in` indicates if the user is logged in (this seems to be a duplicate of a
+        - `is_logged_in` indicates if the user is logged in
+    - `user_tags`: a map that contains some flags about the user; namely:
+        - `is_logged_in` indicates if the user is logged in (this seems to be a duplicate of a
           property with a similar name in the parent `user` object)
-        * `terms`: a map of term ids that indicate if they've been accepted by the user.
-    * `referer` (yep, missing the double "rr"..): If this is missing, a call to hassession will
+        - `terms`: a map of term ids that indicate if they've been accepted by the user.
+    - `referer` (yep, missing the double "rr"..): If this is missing, a call to hassession will
       return a `401` with a `UserException` that says `No session found`.
 
 ## Releasing

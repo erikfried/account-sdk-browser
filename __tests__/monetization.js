@@ -116,6 +116,7 @@ describe('Monetization', () => {
 
                 expect(mon._sessionService.go.mock.calls.length).toBe(1);
             });
+
             test('should call session service once for each productId', async () => {
                 const promises = [
                     mon.hasAccess(['existing'], 12345),
@@ -126,6 +127,7 @@ describe('Monetization', () => {
 
                 expect(mon._sessionService.go.mock.calls.length).toBe(2);
             });
+
             test('should call session service once for each userId', async () => {
                 const promises = [
                     mon.hasAccess(['existing'], 12345),

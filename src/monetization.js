@@ -107,14 +107,17 @@ export class Monetization extends EventEmitter {
             if (!this.pendingHasAccessRequests[cacheKey]) {
                 this.pendingHasAccessRequests[cacheKey] = this._sessionService.get(`/hasAccess/${sortedIds.join(',')}`);
             }
+            const promise = this.pendingHasAccessRequests[cacheKey];
             try {
-                data = await this.pendingHasAccessRequests[cacheKey];
+                data = await promise;
+                const expiresSeconds = data.ttl;
+                this.cache.set(cacheKey, data, expiresSeconds * 1000);
             } finally {
                 // If it rejects, we still want to clear the pending request
-                delete this.pendingHasAccessRequests[cacheKey];
+                if (this.pendingHasAccessRequests[cacheKey] === promise) {
+                    delete this.pendingHasAccessRequests[cacheKey];
+                }
             }
-            const expiresSeconds = data.ttl;
-            this.cache.set(cacheKey, data, expiresSeconds * 1000);
         }
 
         if (!data.entitled) {

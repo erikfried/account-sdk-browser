@@ -105,6 +105,37 @@ describe('Monetization', () => {
 
             expect(mon._sessionService.go.mock.calls.length).toBe(2);
         });
+
+        describe('concurrent calls', () => {
+            test('should only call session service once for same productIds and userId', async () => {
+                const promises = [
+                    mon.hasAccess(['existing'], 12345),
+                    mon.hasAccess(['existing'], 12345),
+                ];
+                await Promise.all(promises);
+
+                expect(mon._sessionService.go.mock.calls.length).toBe(1);
+            });
+            test('should call session service once for each productId', async () => {
+                const promises = [
+                    mon.hasAccess(['existing'], 12345),
+                    mon.hasAccess(['non_existing'], 12345),
+                    mon
+                ];
+                await Promise.all(promises);
+
+                expect(mon._sessionService.go.mock.calls.length).toBe(2);
+            });
+            test('should call session service once for each userId', async () => {
+                const promises = [
+                    mon.hasAccess(['existing'], 12345),
+                    mon.hasAccess(['existing'], 67890),
+                ];
+                await Promise.all(promises);
+
+                expect(mon._sessionService.go.mock.calls.length).toBe(2);
+            });
+        });
     });
 
     describe('productsUrl', () => {

@@ -100,8 +100,8 @@ export class Monetization extends EventEmitter {
             throw new SDKError(`'productIds' must be an array`);
         }
 
-        const sortedIds = productIds.sort();
-        const cacheKey = this._accessCacheKey(productIds, userId);
+        const sortedIds = [...productIds].sort();
+        const cacheKey = this._accessCacheKey(sortedIds, userId);
         let data = this.cache.get(cacheKey);
         if (!data) {
             if (!this.pendingHasAccessRequests[cacheKey]) {
@@ -142,7 +142,7 @@ export class Monetization extends EventEmitter {
      * @private
      */
     _accessCacheKey(productIds, userId) {
-        return `prd_${productIds.sort()}_${userId}`;
+        return `prd_${[...productIds].sort()}_${userId}`;
     }
 
     /**

@@ -40,6 +40,7 @@ export class Monetization extends EventEmitter {
         this.clientId = clientId;
         this.env = env;
         this.redirectUri = redirectUri;
+        this.pendingHasAccessRequests = {};
         this._setSpidServerUrl(env);
 
         if (sessionDomain) {
@@ -99,13 +100,24 @@ export class Monetization extends EventEmitter {
             throw new SDKError(`'productIds' must be an array`);
         }
 
-        const sortedIds = productIds.sort();
-        const cacheKey = this._accessCacheKey(productIds, userId);
+        const sortedIds = [...productIds].sort();
+        const cacheKey = this._accessCacheKey(sortedIds, userId);
         let data = this.cache.get(cacheKey);
         if (!data) {
-            data = await this._sessionService.get(`/hasAccess/${sortedIds.join(',')}`);
-            const expiresSeconds = data.ttl;
-            this.cache.set(cacheKey, data, expiresSeconds * 1000);
+            if (!this.pendingHasAccessRequests[cacheKey]) {
+                this.pendingHasAccessRequests[cacheKey] = this._sessionService.get(`/hasAccess/${sortedIds.join(',')}`);
+            }
+            const promise = this.pendingHasAccessRequests[cacheKey];
+            try {
+                data = await promise;
+                const expiresSeconds = data.ttl;
+                this.cache.set(cacheKey, data, expiresSeconds * 1000);
+            } finally {
+                // If it rejects, we still want to clear the pending request
+                if (this.pendingHasAccessRequests[cacheKey] === promise) {
+                    delete this.pendingHasAccessRequests[cacheKey];
+                }
+            }
         }
 
         if (!data.entitled) {
@@ -133,7 +145,7 @@ export class Monetization extends EventEmitter {
      * @private
      */
     _accessCacheKey(productIds, userId) {
-        return `prd_${productIds.sort()}_${userId}`;
+        return `prd_${[...productIds].sort()}_${userId}`;
     }
 
     /**

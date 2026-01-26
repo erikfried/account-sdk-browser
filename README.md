@@ -97,20 +97,20 @@ Let's start with a bit of example code:
 #### Example
 
 ```javascript
-import { Identity } from "@schibsted/account-sdk-browser";
+import { Identity } from '@schibsted/account-sdk-browser';
 
 const identity = new Identity({
-    clientId: "56e9a5d1eee0000000000000",
-    redirectUri: "https://awesomenews.site", // ensure it's listed in selfservice
-    env: "PRE", // Schibsted account env. A url or a special key: 'PRE', 'PRO', 'PRO_NO', 'PRO_FI' or 'PRO_DK'
-    sessionDomain: "https://id.awesomenews.site", // client-configured session-service domain
+    clientId: '56e9a5d1eee0000000000000',
+    redirectUri: 'https://awesomenews.site', // ensure it's listed in selfservice
+    env: 'PRE', // Schibsted account env. A url or a special key: 'PRE', 'PRO', 'PRO_NO', 'PRO_FI' or 'PRO_DK'
+    sessionDomain: 'https://id.awesomenews.site', // client-configured session-service domain
 });
 
 async function whenSiteLoaded() {
-    const loginContainer = document.getElementById("login-container");
+    const loginContainer = document.getElementById('login-container');
     if (await identity.isLoggedIn()) {
         const user = await identity.getUser();
-        const span = document.createElement("span");
+        const span = document.createElement('span');
         span.textContent = `Hello ${user.givenName}`;
         loginContainer.appendChild(span);
     } else {
@@ -119,7 +119,7 @@ async function whenSiteLoaded() {
 }
 
 function userClicksLogIn() {
-    identity.login({ state: "some-random-string-1234-foobar-wonky-pig" });
+    identity.login({ state: 'some-random-string-1234-foobar-wonky-pig' });
 }
 ```
 
@@ -218,13 +218,13 @@ feature id's.
 #### Example
 
 ```javascript
-import { Monetization } from "@schibsted/account-sdk-browser";
+import { Monetization } from '@schibsted/account-sdk-browser';
 
 const monetization = new Monetization({
-    clientId: "56e9a5d1eee0000000000000",
-    redirectUri: "https://awesomenews.site", // ensure it's listed in selfservice
-    sessionDomain: "https://id.aweseome.site", // client-configured session-service domain
-    env: "PRE", // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
+    clientId: '56e9a5d1eee0000000000000',
+    redirectUri: 'https://awesomenews.site', // ensure it's listed in selfservice
+    sessionDomain: 'https://id.aweseome.site', // client-configured session-service domain
+    env: 'PRE', // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
 });
 
 try {
@@ -245,16 +245,16 @@ pages for redeeming voucher codes, reviewing payment history, and more.
 #### Example
 
 ```javascript
-import { Payment } from "@schibsted/account-sdk-browser";
+import { Payment } from '@schibsted/account-sdk-browser';
 
 const paymentSDK = new Payment({
-    clientId: "56e9a5d1eee0000000000000",
-    redirectUri: "https://awesomenews.site", // ensure it's listed in selfservice
-    env: "PRE", // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
+    clientId: '56e9a5d1eee0000000000000',
+    redirectUri: 'https://awesomenews.site', // ensure it's listed in selfservice
+    env: 'PRE', // Schibsted account env. A url or a special key: 'PRE', 'PRO' or 'PRO_NO'
 });
 
 // Get the url to paymentSDK with paylink
-const paylink = "...";
+const paylink = '...';
 const paylinkUrl = paymentSDK.purchasePaylinkUrl(paylink);
 
 // Or another example --- pay with paylink in a popup

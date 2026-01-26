@@ -1,13 +1,8 @@
 #########################################################
-
-#
-
-# Schibsted account SDK for browsers
-
-# Copyright (c) 2026 Schibsted Products & Technology AS
-
-#
-
+#                                                       #
+# Schibsted account SDK for browsers                    #
+# Copyright (c) 2026 Schibsted Products & Technology AS #
+#                                                       #
 #########################################################
 
 This SDK depends on the following projects (each of which have zero dependencies of their own):
